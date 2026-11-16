@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Walimatul Khitan - Tema Astronot</title>
+    
+    <!-- Google Fonts: Fredoka for playful, rounded look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'space-dark': '#0b162c',
+                        'space-text': '#1a2942',
+                        'accent-orange': '#fb923c',
+                    },
+                    fontFamily: {
+                        'fredoka': ['"Fredoka"', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 4s ease-in-out infinite',
+                        'float-delayed': 'float 4s ease-in-out 2s infinite',
+                        'fly': 'fly 6s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        fly: {
+                            '0%, 100%': { transform: 'translate(0, 0)' },
+                            '50%': { transform: 'translate(15px, -15px)' },
+                        },
+                        'shooting-star': {
+                            '0%': { transform: 'translateX(300px) translateY(-300px) rotate(-45deg)', opacity: '1' },
+                            '20%': { opacity: '1' },
+                            '100%': { transform: 'translateX(-800px) translateY(800px) rotate(-45deg)', opacity: '0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0b162c;
+            color: #ffffff;
+            overflow-x: hidden;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Disable scroll initially */
+        .no-scroll {
+            overflow: hidden !important;
+            height: 100vh;
+        }
+
+        /* Cover Overlay Transitions */
+        #cover-page {
+            transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1), opacity 1s ease, visibility 1s;
+        }
+        .cover-opened {
+            transform: translateY(-150vh);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Stars Background */
+        .stars-bg {
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            /* Animasi twinkle dihilangkan agar teks mudah dibaca dan tidak pusing */
+        }
+
+        /* The Giant White Moon Canvas */
+        .moon-canvas {
+            background-color: #ffffff;
+            color: #1a2942;
+            border-radius: 50%;
+            width: 140vw;
+            height: 140vw;
+            max-width: 800px;
+            max-height: 800px;
+            margin: 0 auto;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: inset -15px -15px 40px rgba(0,0,0,0.05), 0 0 50px rgba(255,255,255,0.1);
+        }
+
+        @media (min-width: 640px) {
+            .moon-canvas {
+                width: 600px;
+                height: 600px;
+            }
+        }
+
+        /* Glassmorphism Space Cards */
+        .space-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+
+        /* Shooting Star */
+        .shooting-star {
+            position: absolute;
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(to left, rgba(255,255,255,0), rgba(255,255,255,0.8));
+            animation: shooting-star 5s linear infinite;
+            opacity: 0;
+            z-index: 1;
+        }
+        .shooting-star::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fb923c, 0 0 40px #fb923c;
+        }
+
+        /* Scroll Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active, .reveal-left.active, .reveal-right.active {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-accent-orange selection:text-white relative no-scroll">
+
+    <!-- Background Music (Hidden) -->
+    <audio id="bg-music" loop>
+        <!-- Placeholder for background music. You can replace the src with a real audio URL -->
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ================= COVER PAGE ================= -->
+    <div id="cover-page" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-space-dark stars-bg min-h-screen w-full text-center px-4">
+        
+        <!-- Floating Decor -->
+        <div class="absolute top-20 right-10 text-5xl animate-float">🚀</div>
+        <div class="absolute bottom-32 left-10 text-5xl animate-float-delayed">🧑‍🚀</div>
+        
+        <div class="space-card p-8 md:p-12 max-w-md w-full relative overflow-hidden flex flex-col items-center shadow-2xl z-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-wide">Undangan Khitanan</h1>
+            <p class="text-accent-orange font-medium mb-8">M. Nur Zhakaria & M. Sidik Maulana</p>
+            
+            <div class="w-16 h-[2px] bg-white/30 mb-6"></div>
+
+            <p class="text-sm text-gray-300 mb-1">Kepada Yth.</p>
+            <p class="text-xs text-gray-400 mb-2">Bapak/Ibu/Saudara/i</p>
+            <!-- Dynamic Guest Name Injected Here -->
+            <h2 id="guest-name-cover" class="text-2xl font-bold text-white mb-8 min-h-[35px] break-words px-2 bg-white/10 py-2 rounded-xl w-full">
+                Tamu Undangan
+            </h2>
+
+            <button onclick="openInvitation()" class="group relative px-8 py-3 font-bold text-space-dark transition-all duration-300 bg-white rounded-full hover:bg-accent-orange hover:text-white shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_25px_rgba(251,146,60,0.6)] focus:outline-none animate-float">
+                <span class="flex items-center gap-2">
+                    Buka Undangan 🚀
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main id="main-content" class="w-full max-w-lg mx-auto bg-space-dark stars-bg min-h-screen relative overflow-hidden pb-20" style="display: none;">
+        
+        <!-- Shooting Stars -->
+        <div class="shooting-star top-10 right-[20%]" style="animation-delay: 0s;"></div>
+        <div class="shooting-star top-40 right-[10%]" style="animation-delay: 1.5s;"></div>
+        <div class="shooting-star top-[40%] right-[30%]" style="animation-delay: 3.2s;"></div>
+        <div class="shooting-star top-[15%] right-[-10%]" style="animation-delay: 2.1s;"></div>
+        <div class="shooting-star top-[60%] right-[5%]" style="animation-delay: 4.8s;"></div>
+
+        <!-- Top Cloud Decoration -->
+        <div class="absolute top-[-20px] left-[-20px] text-6xl opacity-80 z-10">☁️</div>
+        <div class="absolute top-10 right-[-10px] text-5xl opacity-80 z-10">☁️</div>
+
+        <!-- Section 1: Hero Intro (The Moon Canvas) -->
+        <section class="relative pt-20 pb-10 overflow-visible">
+            
+            <!-- Floating UFO & Stars around the moon -->
+            <div class="absolute top-16 right-4 md:right-10 text-6xl z-20 animate-float-delayed drop-shadow-lg" style="transform: rotate(15deg);">🛸</div>
+            <div class="absolute top-32 left-8 text-4xl text-accent-orange z-20">✺</div>
+
+            <!-- The Big White Moon -->
+            <div class="moon-canvas flex flex-col items-center justify-center p-12 text-center pt-24 pb-32">
+                <p class="text-lg md:text-xl font-bold tracking-widest text-space-text mb-6 uppercase">Walimatul Khitan</p>
+                
+                <h1 class="text-3xl md:text-4xl font-bold text-space-text mb-2">M. Nur Zhakaria</h1>
+                <p class="text-xl font-bold text-space-text mb-2">(Zhaki)</p>
+                
+                <div class="text-4xl font-bold text-accent-orange my-1">&</div>
+                
+                <h1 class="text-3xl md:text-4xl font-bold text-space-text mb-2 mt-2">M. Sidik Maulana</h1>
+                <p class="text-xl font-bold text-space-text mb-8">(Sidik)</p>
+                
+                <!-- Small red line / accent -->
+                <div class="w-1 absolute left-8 md:left-16 h-24 bg-red-400 rounded-full opacity-50"></div>
+
+                <div class="mb-8">
+                    <p class="text-2xl font-bold text-space-text uppercase tracking-wide">Minggu</p>
+                    <p class="text-2xl font-bold text-space-text uppercase tracking-wide">27 Desember 2026</p>
+                </div>
+                
+                <div class="mt-4">
+                    <p class="text-sm font-semibold text-gray-500 mb-1">Hormat kami</p>
+                    <p class="text-lg font-bold text-space-text">Bpk Yusuf & Ibu Ayu</p>
+                </div>
+            </div>
+            
+            <!-- Astronaut riding rocket overlapping the moon -->
+            <div class="absolute bottom-[-20px] right-0 md:right-10 text-8xl z-30 animate-fly drop-shadow-2xl">
+                🚀<span class="absolute top-[-20px] left-4 text-5xl">🧑‍🚀</span>
+            </div>
+        </section>
+
+        <!-- Section 2: Event Details & Countdown -->
+        <section class="py-12 px-6 relative z-10">
+            <div class="text-center mb-10 reveal">
+                <h2 class="text-3xl font-bold text-white mb-2">Detail Misi 🌟</h2>
+                <div class="w-16 h-1 bg-accent-orange mx-auto rounded-full"></div>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Date & Time Card -->
+                <div class="space-card p-6 text-center border-t-4 border-t-accent-orange reveal-left">
+                    <div class="text-4xl mb-3">⏰</div>
+                    <h3 class="font-bold text-xl text-white">Minggu, 27 Desember 2026</h3>
+                    <p class="text-base text-gray-300 mt-2 bg-white/10 inline-block px-4 py-1 rounded-full">09.00 WIB - Selesai</p>
+                </div>
+
+                <!-- Location Card -->
+                <div class="space-card p-6 text-center border-t-4 border-t-blue-400 reveal-right">
+                    <div class="text-4xl mb-3">📍</div>
+                    <h3 class="font-bold text-xl text-white mb-2">Kediaman Keluarga</h3>
+                    <p class="text-sm text-gray-300 mb-4 leading-relaxed">Jl. GG Bungbulang soklat RT 21 RW 06,<br>Soklat, Kec. Subang, Kabupaten Subang 41215</p>
+                    
+                    <!-- Google Maps Iframe -->
+                    <div class="w-full h-48 rounded-xl overflow-hidden mb-5 border-2 border-white/20">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126815.1973685601!2d107.6775685250965!3d-6.570183141505307!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e693b0cf4cbf03f%3A0x301e8f1fc28ba20!2sSubang%2C%20Subang%20Regency%2C%20West%20Java!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+
+                    <a href="https://maps.app.goo.gl/1RLJ7jTNuEDAeTdm7?g_st=aw" target="_blank" class="inline-block bg-accent-orange text-white px-6 py-3 rounded-full text-base font-bold hover:bg-orange-500 transition-colors shadow-[0_0_15px_rgba(251,146,60,0.4)]">
+                        Buka Google Maps
+                    </a>
+                </div>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div class="mt-16 reveal">
+                <h3 class="text-center font-bold text-xl text-white mb-6">Hitung Mundur Peluncuran ⏳</h3>
+                <div class="flex justify-center gap-3 md:gap-4 text-center">
+                    <div class="space-card p-3 md:p-4 w-20 md:w-24 border border-white/20">
+                        <div id="days" class="text-3xl font-bold text-accent-orange">00</div>
+                        <div class="text-[10px] md:text-xs uppercase tracking-wider mt-1 text-gray-300">Hari</div>
+                    </div>
+                    <div class="space-card p-3 md:p-4 w-20 md:w-24 border border-white/20">
+                        <div id="hours" class="text-3xl font-bold text-accent-orange">00</div>
+                        <div class="text-[10px] md:text-xs uppercase tracking-wider mt-1 text-gray-300">Jam</div>
+                    </div>
+                    <div class="space-card p-3 md:p-4 w-20 md:w-24 border border-white/20">
+                        <div id="minutes" class="text-3xl font-bold text-accent-orange">00</div>
+                        <div class="text-[10px] md:text-xs uppercase tracking-wider mt-1 text-gray-300">Menit</div>
+                    </div>
+                    <div class="space-card p-3 md:p-4 w-20 md:w-24 border border-white/20">
+                        <div id="seconds" class="text-3xl font-bold text-accent-orange">00</div>
+                        <div class="text-[10px] md:text-xs uppercase tracking-wider mt-1 text-gray-300">Detik</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Closing -->
+        <section class="py-12 px-6 text-center relative z-10 reveal">
+            <p class="text-sm text-gray-300 mb-6 leading-relaxed bg-black/30 p-6 rounded-2xl border border-white/10">
+                Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir serta memberikan doa restu agar putra kami menjadi anak yang sholeh.
+            </p>
+            <p class="text-sm text-gray-400 mb-8">
+                Wassalamu'alaikum Warahmatullahi Wabarakatuh
+            </p>
+            
+            <div class="inline-block border-t border-b border-white/20 py-4 px-8 mt-4">
+                <p class="text-xs text-gray-400 uppercase tracking-widest mb-2">Kami yang berbahagia</p>
+                <h3 class="font-bold text-white text-xl">Keluarga Bpk. Yusuf & Ibu Ayu</h3>
+            </div>
+        </section>
+        
+        <!-- Bottom Cloud Decoration -->
+        <div class="absolute bottom-[-10px] left-0 right-0 flex justify-between z-0 opacity-70">
+            <div class="text-6xl">☁️</div>
+            <div class="text-6xl">☁️</div>
+            <div class="text-6xl">☁️</div>
+        </div>
+    </main>
+
+    <!-- Roket yang akan terbang ke atas saat di scroll -->
+    <div id="scroll-rocket" class="fixed bottom-5 right-5 text-5xl z-[60] transition-transform duration-100 ease-out opacity-0 pointer-events-none">🚀</div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // 1. Parse URL parameters to get Guest Name
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const guestNameParam = urlParams.get('to');
+            const guestNameElement = document.getElementById('guest-name-cover');
+
+            if (guestNameParam && guestNameParam.trim() !== '') {
+                guestNameElement.textContent = guestNameParam;
+            } else {
+                guestNameElement.textContent = "Bapak/Ibu/Saudara/i";
+            }
+        });
+
+        // 2. Open Invitation Logic (Hide cover page & Play Music)
+        function openInvitation() {
+            const coverPage = document.getElementById('cover-page');
+            const mainContent = document.getElementById('main-content');
+            
+            // Tampilkan konten utama terlebih dahulu di balik layar
+            mainContent.style.display = 'block';
+
+            // Beri jeda sepersekian detik agar layout siap, lalu tarik cover ke atas
+            setTimeout(() => {
+                coverPage.classList.add('cover-opened');
+            }, 50);
+            
+            // Aktifkan scroll di halaman utama
+            document.body.classList.remove('no-scroll');
+            window.scrollTo(0,0);
+
+            // Hilangkan elemen sepenuhnya dari DOM setelah animasi (1 detik)
+            setTimeout(() => {
+                coverPage.style.display = 'none';
+                
+                // Munculkan roket scroll
+                const scrollRocket = document.getElementById('scroll-rocket');
+                if (scrollRocket) {
+                    scrollRocket.classList.remove('opacity-0');
+                    scrollRocket.classList.add('opacity-100');
+                }
+            }, 1000);
+
+            // Play background music
+            const bgMusic = document.getElementById('bg-music');
+            if (bgMusic) {
+                bgMusic.play().catch(error => {
+                    console.log("Autoplay prevented by browser:", error);
+                });
+            }
+        }
+
+        // 3. Countdown Timer Logic (Target: 27 Dec 2026, 09:00:00)
+        // Month is 0-indexed, so 11 = December
+        const targetDate = new Date(2026, 11, 27, 9, 0, 0).getTime(); 
+
+        const countdownInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("days").innerText = "00";
+                document.getElementById("hours").innerText = "00";
+                document.getElementById("minutes").innerText = "00";
+                document.getElementById("seconds").innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+            document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+        }, 1000);
+
+        // 4. Scroll Rocket Logic (Semakin scroll ke bawah, roket semakin naik)
+        window.addEventListener('scroll', () => {
+            const scrollRocket = document.getElementById('scroll-rocket');
+            // Pastikan cover sudah terbuka (roket terlihat)
+            if (scrollRocket && scrollRocket.classList.contains('opacity-100')) {
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                
+                if (docHeight > 0) {
+                    const scrollPercent = scrollTop / docHeight;
+                    // Roket bergerak ke atas maksimal sejauh tinggi layar (dikurangi sedikit ruang agar tidak keluar layar sepenuhnya)
+                    const moveUpDistance = scrollPercent * (window.innerHeight - 80);
+                    scrollRocket.style.transform = `translateY(-${moveUpDistance}px)`;
+                }
+            }
+        });
+
+        // 5. Scroll Reveal Animasi (Memunculkan elemen dengan halus saat di scroll)
+        const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+        
+        const revealCallback = (entries, observer) => {
+            entries.forEach(entry => {
+                // Jika elemen masuk ke dalam viewport (layar hp)
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        };
+
+        const revealOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15 // Animasi mulai saat 15% dari elemen terlihat
+        };
+
+        const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
+        
+        revealElements.forEach(el => revealObserver.observe(el));
+    </script>
+</body>
+</html>
